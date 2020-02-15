@@ -8,13 +8,17 @@ package cc.xpbootcamp.warmup.cashier;
  *
  */
 public class OrderReceipt {
+
+    private String text;
+
     private Order order;
 
     public OrderReceipt(Order order) {
         this.order = order;
+        this.createReceipt();
     }
 
-    public String printReceipt() {
+    private void createReceipt(){
         StringBuilder output = new StringBuilder();
 
         // print headers
@@ -52,6 +56,10 @@ public class OrderReceipt {
 
         // print total amount
         output.append("Total Amount").append('\t').append(tot);
-        return output.toString();
+        this.text = output.toString();
+    }
+
+    public String printReceipt() {
+        return this.text;
     }
 }

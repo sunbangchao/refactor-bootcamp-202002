@@ -9,7 +9,9 @@ package cc.xpbootcamp.warmup.cashier;
  */
 public class OrderReceipt {
 
-    private String text;
+    private final static String RECEIPT_HEAD = "======Printing Orders======";
+
+    private StringBuilder text;
 
     private Order order;
 
@@ -19,29 +21,21 @@ public class OrderReceipt {
     }
 
     private void createReceipt(){
-        StringBuilder output = new StringBuilder();
+        text = new StringBuilder();
 
         // print headers
-        output.append("======Printing Orders======\n");
+        this.newRow(RECEIPT_HEAD);
 
         // print date, bill no, customer name
 //        output.append("Date - " + order.getDate();
-        output.append(order.getCustomerName());
-        output.append(order.getCustomerAddress());
+        this.newRow(order.getCustomerName() + "\t" + order.getCustomerAddress());
 //        output.append(order.getCustomerLoyaltyNumber());
 
         // prints lineItems
         double totSalesTx = 0d;
         double tot = 0d;
         for (LineItem lineItem : order.getLineItems()) {
-            output.append(lineItem.getDescription());
-            output.append('\t');
-            output.append(lineItem.getPrice());
-            output.append('\t');
-            output.append(lineItem.getQuantity());
-            output.append('\t');
-            output.append(lineItem.totalAmount());
-            output.append('\n');
+            this.newRow(lineItem.getDescription() + "\t" + lineItem.getPrice() + "\t" + lineItem.getQuantity() + "\t" + lineItem.totalAmount());
 
             // calculate sales tax @ rate of 10%
             double salesTax = lineItem.totalAmount() * .10;
@@ -52,14 +46,18 @@ public class OrderReceipt {
         }
 
         // prints the state tax
-        output.append("Sales Tax").append('\t').append(totSalesTx);
+        this.newRow("Sales Tax\t" + totSalesTx);
 
         // print total amount
-        output.append("Total Amount").append('\t').append(tot);
-        this.text = output.toString();
+        this.newRow("Total Amount\t" + tot);
+    }
+
+    public void newRow(String str){
+        text.append(str);
+        text.append("\n");
     }
 
     public String printReceipt() {
-        return this.text;
+        return this.text.toString();
     }
 }

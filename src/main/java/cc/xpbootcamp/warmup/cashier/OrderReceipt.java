@@ -10,10 +10,14 @@ package cc.xpbootcamp.warmup.cashier;
 public class OrderReceipt {
 
     private final static String RECEIPT_HEAD = "======Printing Orders======";
+    private final static String SALES_TAX = "Sales Tax";
+    private final static String TOTAL_AMOUNT = "Total Amount";
 
     private StringBuilder text;
 
     private Order order;
+    private Double tax;
+    private Double totalAmount;
 
     public OrderReceipt(Order order) {
         this.order = order;
@@ -25,34 +29,45 @@ public class OrderReceipt {
 
         // print headers
         this.newRow(RECEIPT_HEAD);
-
-        // print date, bill no, customer name
-//        output.append("Date - " + order.getDate();
-        this.newRow(order.getCustomerName() + "\t" + order.getCustomerAddress());
-//        output.append(order.getCustomerLoyaltyNumber());
-
-        // prints lineItems
-        double totSalesTx = 0d;
-        double tot = 0d;
-        for (LineItem lineItem : order.getLineItems()) {
-            this.newRow(lineItem.getDescription() + "\t" + lineItem.getPrice() + "\t" + lineItem.getQuantity() + "\t" + lineItem.totalAmount());
-
-            // calculate sales tax @ rate of 10%
-            double salesTax = lineItem.totalAmount() * .10;
-            totSalesTx += salesTax;
-
-            // calculate total amount of lineItem = price * quantity + 10 % sales tax
-            tot += lineItem.totalAmount() + salesTax;
-        }
-
-        // prints the state tax
-        this.newRow("Sales Tax\t" + totSalesTx);
-
-        // print total amount
-        this.newRow("Total Amount\t" + tot);
+        this.createCustomerInfo();
+        this.createLineItems();
+        this.calculateSalesTaxAndTotalAmount();
+        this.createSalesTax();
+        this.createTotalAmount();
     }
 
-    public void newRow(String str){
+    private void createCustomerInfo(){
+        this.newRow(order.getCustomerName() + "\t" + order.getCustomerAddress());
+    }
+
+    private void createLineItems(){
+        for (LineItem lineItem : order.getLineItems()) {
+            this.newRow(lineItem.getDescription() + "\t" + lineItem.getPrice() + "\t" + lineItem.getQuantity() + "\t" + lineItem.totalAmount());
+        }
+    }
+
+    private void calculateSalesTaxAndTotalAmount(){
+        tax = 0.0;
+        totalAmount = 0.0;
+
+        for (LineItem lineItem : order.getLineItems()) {
+            // calculate sales tax @ rate of 10%
+            double salesTax = lineItem.totalAmount() * .10;
+            tax += salesTax;
+            // calculate total amount of lineItem = price * quantity + 10 % sales tax
+            totalAmount += lineItem.totalAmount() + salesTax;
+        }
+    }
+
+    private void createSalesTax(){
+        this.newRow(SALES_TAX + "\t" + tax);
+    }
+
+    private void createTotalAmount(){
+        this.newRow(TOTAL_AMOUNT + "\t" + totalAmount);
+    }
+
+    private void newRow(String str){
         text.append(str);
         text.append("\n");
     }

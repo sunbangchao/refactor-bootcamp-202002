@@ -34,7 +34,7 @@ class OrderReceiptTest {
         assertThat(output,containsString("biscuits, 5.00 × 5, 25.00"));
         assertThat(output,containsString("chocolate, 20.00 × 1, 20.00"));
         assertThat(output,containsString("税额：6.50"));
-        assertThat(output,containsString("总价：71.00"));
+        assertThat(output,containsString("总价：71.50"));
     }
 
     @Test
@@ -56,8 +56,8 @@ class OrderReceiptTest {
         assertThat(output,containsString("biscuits, 5.00 × 5, 25.00"));
         assertThat(output,containsString("chocolate, 20.00 × 1, 20.00"));
         assertThat(output,containsString("税额：6.50"));
-        assertThat(output,containsString("折扣：1.42"));
-        assertThat(output,containsString("总价：69.58"));
+        assertThat(output,containsString("折扣：1.43"));
+        assertThat(output,containsString("总价：70.07"));
     }
 
 }

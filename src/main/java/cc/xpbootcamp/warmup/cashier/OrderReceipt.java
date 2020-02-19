@@ -1,5 +1,9 @@
 package cc.xpbootcamp.warmup.cashier;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * OrderReceipt prints the details of order including customer name, address, description, quantity,
  * price and amount. It also calculates the sales tax @ 10% and prints as part
@@ -9,14 +13,17 @@ package cc.xpbootcamp.warmup.cashier;
  */
 public class OrderReceipt {
 
-    private final static String RECEIPT_HEAD = "======Printing Orders======";
-    private final static String SALES_TAX = "Sales Tax";
-    private final static String TOTAL_AMOUNT = "Total Amount";
+    private final static String RECEIPT_HEAD = "===== 老王超市，值得信赖 ======";
+    private final static String SALES_TAX = "税额：";
+    private final static String TOTAL_AMOUNT = "总价：";
+    private final static String DISCOUNT = "折扣：";
+    private final static String DIVIDING_LINE = "-----------------------------------";
 
     private StringBuilder text;
 
     private Order order;
     private Double tax;
+    private Double discount;
     private Double totalAmount;
 
     public OrderReceipt(Order order) {
@@ -27,28 +34,33 @@ public class OrderReceipt {
     private void createReceipt(){
         text = new StringBuilder();
 
-        // print headers
         this.newRow(RECEIPT_HEAD);
-        this.createCustomerInfo();
+        this.newRow();
+        this.createDate();
+        this.newRow();
         this.createLineItems();
-        this.calculateSalesTaxAndTotalAmount();
+        this.newRow(DIVIDING_LINE);
+        this.calculateSalesTaxAndTotalAmountAndDiscount();
         this.createSalesTax();
+        this.createDiscount();
         this.createTotalAmount();
     }
 
-    private void createCustomerInfo(){
-        this.newRow(order.getCustomerName() + "\t" + order.getCustomerAddress());
+    private void createDate(){
+        DateFormat format = new SimpleDateFormat("yyyy年MM月dd日，EEEE");
+        this.newRow(format.format(order.getDate()));
     }
 
     private void createLineItems(){
         for (LineItem lineItem : order.getLineItems()) {
-            this.newRow(lineItem.getDescription() + "\t" + lineItem.getPrice() + "\t" + lineItem.getQuantity() + "\t" + lineItem.totalAmount());
+            this.newRow(lineItem.getDescription() + ", " + String.format("%.2f",lineItem.getPrice()) + " × " + lineItem.getQuantity() + ", " + String.format("%.2f",lineItem.totalAmount()));
         }
     }
 
-    private void calculateSalesTaxAndTotalAmount(){
+    private void calculateSalesTaxAndTotalAmountAndDiscount(){
         tax = 0.0;
         totalAmount = 0.0;
+        discount = 0.0;
 
         for (LineItem lineItem : order.getLineItems()) {
             // calculate sales tax @ rate of 10%
@@ -57,18 +69,34 @@ public class OrderReceipt {
             // calculate total amount of lineItem = price * quantity + 10 % sales tax
             totalAmount += lineItem.totalAmount() + salesTax;
         }
+
+
     }
 
     private void createSalesTax(){
-        this.newRow(SALES_TAX + "\t" + tax);
+        this.newRow(SALES_TAX + String.format("%.2f",tax));
+    }
+
+    private void createDiscount(){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(order.getDate());
+        if(cal.get(Calendar.DAY_OF_WEEK) == 4){
+            discount = totalAmount * .02;
+            totalAmount = totalAmount - discount;
+            this.newRow(DISCOUNT + String.format("%.2f",discount));
+        }
     }
 
     private void createTotalAmount(){
-        this.newRow(TOTAL_AMOUNT + "\t" + totalAmount);
+        this.newRow(TOTAL_AMOUNT + String.format("%.2f",totalAmount));
     }
 
     private void newRow(String str){
         text.append(str);
+        text.append("\n");
+    }
+
+    private void newRow(){
         text.append("\n");
     }
 

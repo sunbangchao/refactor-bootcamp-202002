@@ -1,6 +1,7 @@
 package cc.xpbootcamp.warmup.cashier;
 
 import cc.xpbootcamp.warmup.utils.DateUtil;
+
 import java.util.Calendar;
 
 /**
@@ -12,93 +13,45 @@ import java.util.Calendar;
  */
 public class OrderReceipt {
 
-    private final static String RECEIPT_HEAD = "===== 老王超市，值得信赖 ======";
-    private final static String SALES_TAX = "税额：";
-    private final static String TOTAL_AMOUNT = "总价：";
-    private final static String DISCOUNT = "折扣：";
-    private final static String DIVIDING_LINE = "-----------------------------------";
+    private static final String RECEIPT_HEAD = "===== 老王超市，值得信赖 ======";
+    private static final String SALES_TAX = "税额：";
+    private static final String TOTAL_AMOUNT = "总价：";
+    private static final String DISCOUNT = "折扣：";
+    private static final String DIVIDING_LINE = "-----------------------------------";
 
-    private StringBuilder text;
+    private String info;
 
-    private OriginalOrder originalOrder;
-    private Double tax;
-    private Double discount;
-    private Double totalAmount;
 
-    public OrderReceipt(OriginalOrder originalOrder) {
-        this.originalOrder = originalOrder;
-        this.createReceipt();
+
+    public OrderReceipt(Order order) {
+        this.createReceipt(order);
     }
 
-    private void createReceipt(){
-        text = new StringBuilder();
+    private void createReceipt(Order order){
+        StringBuilder stringBuilder = new StringBuilder();
 
-        this.newRow(RECEIPT_HEAD);
-        this.newRow();
-        this.createDate();
-        this.newRow();
-        this.createLineItems();
-        this.newRow(DIVIDING_LINE);
-        this.calculateSalesTaxAndTotalAmountAndDiscount();
-        this.createSalesTax();
-        this.createDiscount();
-        this.createTotalAmount();
-    }
-
-    private void createDate(){
-        this.newRow(DateUtil.format2YYYYMMDDEEEE_CH(originalOrder.getDate()));
-    }
-
-    private void createLineItems(){
-        for (LineItem lineItem : originalOrder.getLineItems()) {
-            this.newRow(lineItem.getDescription() + ", " + String.format("%.2f",lineItem.getPrice()) + " × " + lineItem.getQuantity() + ", " + String.format("%.2f",lineItem.totalAmount()));
+        stringBuilder.append(RECEIPT_HEAD);
+        stringBuilder.append("\n");
+        stringBuilder.append(DateUtil.format2YYYYMMDDEEEE_CH(order.orderDate));
+        stringBuilder.append("\n");
+        order.getLineItemList().stream().forEach(lineItem -> {
+            stringBuilder.append(lineItem.getGood().getDesc() + ", " + String.format("%.2f",lineItem.getGood().getPrice()) + " × " + lineItem.getQuantity() + ", " + String.format("%.2f",lineItem.getAmount()));
+            stringBuilder.append("\n");
+        });
+        stringBuilder.append(DIVIDING_LINE);
+        stringBuilder.append("\n");
+        stringBuilder.append(SALES_TAX + String.format("%.2f",order.getTax()));
+        stringBuilder.append("\n");
+        if(order.getDiscount() > 0) {
+            stringBuilder.append(DISCOUNT + String.format("%.2f",order.getDiscount()));
+            stringBuilder.append("\n");
         }
-    }
+        stringBuilder.append(TOTAL_AMOUNT + String.format("%.2f",order.getTotalAmount()));
 
-    private void calculateSalesTaxAndTotalAmountAndDiscount(){
-        tax = 0.0;
-        totalAmount = 0.0;
-        discount = 0.0;
-
-        for (LineItem lineItem : originalOrder.getLineItems()) {
-            // calculate sales tax @ rate of 10%
-            double salesTax = lineItem.totalAmount() * .10;
-            tax += salesTax;
-            // calculate total amount of lineItem = price * quantity + 10 % sales tax
-            totalAmount += lineItem.totalAmount() + salesTax;
-        }
-
-
-    }
-
-    private void createSalesTax(){
-        this.newRow(SALES_TAX + String.format("%.2f",tax));
-    }
-
-    private void createDiscount(){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(originalOrder.getDate());
-        if(cal.get(Calendar.DAY_OF_WEEK) == 4){
-            discount = totalAmount * .02;
-            totalAmount = totalAmount - discount;
-            this.newRow(DISCOUNT + String.format("%.2f",discount));
-        }
-    }
-
-    private void createTotalAmount(){
-        this.newRow(TOTAL_AMOUNT + String.format("%.2f",totalAmount));
-    }
-
-    private void newRow(String str){
-        text.append(str);
-        text.append("\n");
-    }
-
-    private void newRow(){
-        text.append("\n");
+        this.info = stringBuilder.toString();
     }
 
     public String printReceipt() {
-        return this.text.toString();
+        return this.info;
     }
 }

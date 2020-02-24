@@ -18,14 +18,14 @@ class OrderReceiptTest {
     @Test
     public void should_print_line_item_and_sales_tax_and_total_amount_information(){
         List<LineItem> lineItems = new ArrayList<LineItem>() {{
-            add(new LineItem("milk", 10.0, 2));
-            add(new LineItem("biscuits", 5.0, 5));
-            add(new LineItem("chocolate", 20.0, 1));
+            add(new LineItem(new Good("milk",10.0), 2));
+            add(new LineItem(new Good("biscuits", 5.0), 5));
+            add(new LineItem(new Good("chocolate", 20.0), 1));
         }};
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.set(Calendar.DAY_OF_WEEK,1);
-        OrderReceipt receipt = new OrderReceipt(new OriginalOrder(calendar.getTime(), lineItems));
+        OrderReceipt receipt = new OrderReceipt(new Order(calendar.getTime(), lineItems));
         String output = receipt.printReceipt();
 
         System.out.println(output);
@@ -43,14 +43,14 @@ class OrderReceiptTest {
     @Test
     public void should_print_line_item_and_sales_tax_and_discount_and_total_amount_information(){
         List<LineItem> lineItems = new ArrayList<LineItem>() {{
-            add(new LineItem("milk", 10.0, 2));
-            add(new LineItem("biscuits", 5.0, 5));
-            add(new LineItem("chocolate", 20.0, 1));
+            add(new LineItem(new Good("milk",10.0), 2));
+            add(new LineItem(new Good("biscuits", 5.0), 5));
+            add(new LineItem(new Good("chocolate", 20.0), 1));
         }};
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.set(Calendar.DAY_OF_WEEK,4);
-        OrderReceipt receipt = new OrderReceipt(new OriginalOrder(calendar.getTime(), lineItems));
+        OrderReceipt receipt = new OrderReceipt(new Order(calendar.getTime(), lineItems));
         String output = receipt.printReceipt();
 
         System.out.println(output);

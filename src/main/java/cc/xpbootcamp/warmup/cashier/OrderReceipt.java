@@ -1,7 +1,6 @@
 package cc.xpbootcamp.warmup.cashier;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import cc.xpbootcamp.warmup.utils.DateUtil;
 import java.util.Calendar;
 
 /**
@@ -21,13 +20,13 @@ public class OrderReceipt {
 
     private StringBuilder text;
 
-    private Order order;
+    private OriginalOrder originalOrder;
     private Double tax;
     private Double discount;
     private Double totalAmount;
 
-    public OrderReceipt(Order order) {
-        this.order = order;
+    public OrderReceipt(OriginalOrder originalOrder) {
+        this.originalOrder = originalOrder;
         this.createReceipt();
     }
 
@@ -47,12 +46,11 @@ public class OrderReceipt {
     }
 
     private void createDate(){
-        DateFormat format = new SimpleDateFormat("yyyy年MM月dd日，EEEE");
-        this.newRow(format.format(order.getDate()));
+        this.newRow(DateUtil.format2YYYYMMDDEEEE_CH(originalOrder.getDate()));
     }
 
     private void createLineItems(){
-        for (LineItem lineItem : order.getLineItems()) {
+        for (LineItem lineItem : originalOrder.getLineItems()) {
             this.newRow(lineItem.getDescription() + ", " + String.format("%.2f",lineItem.getPrice()) + " × " + lineItem.getQuantity() + ", " + String.format("%.2f",lineItem.totalAmount()));
         }
     }
@@ -62,7 +60,7 @@ public class OrderReceipt {
         totalAmount = 0.0;
         discount = 0.0;
 
-        for (LineItem lineItem : order.getLineItems()) {
+        for (LineItem lineItem : originalOrder.getLineItems()) {
             // calculate sales tax @ rate of 10%
             double salesTax = lineItem.totalAmount() * .10;
             tax += salesTax;
@@ -79,7 +77,7 @@ public class OrderReceipt {
 
     private void createDiscount(){
         Calendar cal = Calendar.getInstance();
-        cal.setTime(order.getDate());
+        cal.setTime(originalOrder.getDate());
         if(cal.get(Calendar.DAY_OF_WEEK) == 4){
             discount = totalAmount * .02;
             totalAmount = totalAmount - discount;

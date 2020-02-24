@@ -3,17 +3,17 @@ package cc.xpbootcamp.warmup.cashier;
 import java.util.Date;
 import java.util.List;
 
-public class Order {
-    Date date;
+public class OriginalOrder {
+    Date orderDate;
     List<LineItem> lineItemList;
 
-    public Order(Date date, List<LineItem> lineItemList) {
-        this.date = date;
+    public OriginalOrder(Date orderDate, List<LineItem> lineItemList) {
+        this.orderDate = orderDate;
         this.lineItemList = lineItemList;
     }
 
     public Date getDate() {
-        return date;
+        return orderDate;
     }
 
     public List<LineItem> getLineItems() {

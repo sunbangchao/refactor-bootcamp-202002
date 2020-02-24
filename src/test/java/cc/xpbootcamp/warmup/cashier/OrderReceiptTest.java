@@ -25,10 +25,13 @@ class OrderReceiptTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.set(Calendar.DAY_OF_WEEK,1);
-        OrderReceipt receipt = new OrderReceipt(new Order(calendar.getTime(), lineItems));
+        OrderReceipt receipt = new OrderReceipt(new OriginalOrder(calendar.getTime(), lineItems));
         String output = receipt.printReceipt();
 
+        System.out.println(output);
+
         DateFormat format = new SimpleDateFormat("yyyy年MM月dd日，EEEE");
+        assertThat(output,containsString("===== 老王超市，值得信赖 ======"));
         assertThat(output,containsString(format.format(calendar.getTime())));
         assertThat(output,containsString("milk, 10.00 × 2, 20.00"));
         assertThat(output,containsString("biscuits, 5.00 × 5, 25.00"));
@@ -47,8 +50,10 @@ class OrderReceiptTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.set(Calendar.DAY_OF_WEEK,4);
-        OrderReceipt receipt = new OrderReceipt(new Order(calendar.getTime(), lineItems));
+        OrderReceipt receipt = new OrderReceipt(new OriginalOrder(calendar.getTime(), lineItems));
         String output = receipt.printReceipt();
+
+        System.out.println(output);
 
         DateFormat format = new SimpleDateFormat("yyyy年MM月dd日，EEEE");
         assertThat(output,containsString(format.format(calendar.getTime())));
